@@ -1,2 +1,4 @@
 # Project exclude paths
 /node-bff-api/node_modules/
+/node-order-api/node_modules/
+/node-product-api/node_modules/

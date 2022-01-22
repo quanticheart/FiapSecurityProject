@@ -1,20 +1,12 @@
-const RateLimit = require('express-rate-limit');
 const express = require('express')
-const cookieParser = require('cookie-parser');
-const bodyParser = require('body-parser');
-
 const app = express()
 const port = 3001
+
 const db = require("./db");
 
-const limiter = new RateLimit({
-    windowMs: 15 * 60 * 1000,
-    max: 50,
-    delayMs: 0,
-    message: "Too many accounts created from this IP, please try again after an hour"
-});
+let cookieParser = require('cookie-parser');
+const bodyParser = require('body-parser');
 
-app.use(limiter);
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 app.use(cookieParser());

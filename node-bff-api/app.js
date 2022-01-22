@@ -1,40 +1,23 @@
-var http = require('http');
+const {getApp, host} = require("./utils");
+const app = getApp()
 
-const express = require('express')
-var cors = require('cors')
-const app = express()
+const request = require('request');
 const port = 3000
 
-const db = require("./db");
-
-var cookieParser = require('cookie-parser');
-const bodyParser = require('body-parser');
-
-
-app.use(cors());
-
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(express.json());
-app.use(cookieParser());
-
-var request = require('request');
-
-var host = process.env.DOCKER_HOST_IP || 'http://localhost'
-
-app.get('/products', async (req, res, next) => {
-    request(`${host}:3001/products`, function(err, body){
+app.get('/products', async (req, res) => {
+    request(`${host}:3001/products`, function (err, body) {
         return res.json(JSON.parse(body.body));
     });
 });
 
-app.post('/buy', async (req, res, next) => {
+app.post('/buy', async (req, res) => {
     request({
         url: `${host}:3002/orders`,
-        headers: {'content-type' : 'application/json'},
+        headers: {'content-type': 'application/json'},
         method: 'POST',
         body: JSON.stringify(req.body)
-    }, function(error, response, body){
-        if(error) {
+    }, function (error, response, body) {
+        if (error) {
             console.log(error);
         } else {
             console.log(response.statusCode, body);
@@ -49,3 +32,39 @@ app.post('/buy', async (req, res, next) => {
 app.listen(port, () => {
     console.log(`Listening at http://localhost:${port}`)
 });
+
+// require('utils');
+// const request = require('request');
+//
+// const app = getApp()
+// const port = 3000
+//
+// app.get('/products', async (req, res, next) => {
+//     request(`${host}:3001/products`, function(err, body){
+//         return res.json(JSON.parse(body.body));
+//     });
+// });
+//
+// app.post('/buy', async (req, res, next) => {
+//     request({
+//         url: `${host}:3002/orders`,
+//         headers: {'content-type' : 'application/json'},
+//         method: 'POST',
+//         body: JSON.stringify(req.body)
+//     }, function(error, response, body){
+//         if(error) {
+//             console.log(error);
+//         } else {
+//             console.log(response.statusCode, body);
+//             let resp = JSON.parse(body);
+//             resp.status = response.statusCode;
+//             return res.json(resp);
+//         }
+//     });
+// });
+//
+//
+// app.listen(port, () => {
+//     console.log(`Listening at http://localhost:${port}`)
+// });
+
