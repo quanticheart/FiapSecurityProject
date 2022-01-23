@@ -4,7 +4,23 @@ const app = getApp()
 const request = require('request');
 const port = 3000
 
-app.get('/products', async (req, res) => {
+const { auth, requiredScopes } = require('express-oauth2-jwt-bearer');
+const checkScopes = requiredScopes('openid');
+
+const checkJwt = auth({
+    audience: 'http://localhost:4200',
+    issuerBaseURL: `https://dev-5b04zxtm.us.auth0.com`,
+});
+
+app.use(function(req, res, next) {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, authorization');
+    res.setHeader('Access-Control-Allow-Credentials', true);
+    next();
+ });
+
+app.get('/products', checkJwt, checkScopes, async (req, res, next) => {
     request(`${host}:3001/products`, function (err, body) {
         return res.json(JSON.parse(body.body));
     });
