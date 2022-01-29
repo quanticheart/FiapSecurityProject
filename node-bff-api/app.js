@@ -1,3 +1,5 @@
+// noinspection JSCheckFunctionSignatures
+
 const {getApp, host} = require("./utils");
 const app = getApp()
 
@@ -20,15 +22,15 @@ app.use(function (req, res, next) {
     next();
 });
 
-// Implementa https
+// Implement https
 const fs = require('fs');
-var https = require('https');
-var privateKey = fs.readFileSync('./sslcert/selfsigned.key', 'utf8');
-var certificate = fs.readFileSync('./sslcert/selfsigned.crt', 'utf8');
-var credentials = {key: privateKey, cert: certificate};
-var httpsServer = https.createServer(credentials, app);
+const https = require('https');
+let privateKey = fs.readFileSync('./sslcert/selfsigned.key', 'utf8');
+let certificate = fs.readFileSync('./sslcert/selfsigned.crt', 'utf8');
+let credentials = {key: privateKey, cert: certificate};
+let httpsServer = https.createServer(credentials, app);
 
-app.get('/products', checkJwt, checkScopes, async (req, res, next) => {
+app.get('/products', checkJwt, checkScopes, async (req, res) => {
     request(`${host}:3001/products`, function (err, body) {
         return res.json(JSON.parse(body.body));
     });
@@ -42,10 +44,9 @@ app.post('/buy', checkJwt, checkScopes, async (req, res) => {
         body: JSON.stringify(req.body)
     }, function (error, response, body) {
         if (error) {
-            console.log(error);
+            return res.json(error);
         } else {
-            console.log(response.statusCode, body);
-            var resp = JSON.parse(body);
+            let resp = JSON.parse(body);
             resp.status = response.statusCode;
             return res.json(resp);
         }
