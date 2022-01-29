@@ -19,37 +19,52 @@ async function getAllOrders() {
     const conn = await connect();
     const query = `SELECT *
                    FROM orders LIMIT 1000;`;
-    const [rows, fields] = await connection.execute(query);
+    const [rows, fields] = await conn.execute(query);
     return rows;
 }
 
 async function getOrderById(id) {
     const conn = await connect();
-    const query = `SELECT *
-                   FROM orders
-                   WHERE id = "${id}";`;
-    const [rows, fields] = await connection.execute(query);
-    return rows;
+    const query = `SELECT * FROM orders WHERE id = ?;`;
+
+    try{
+        const [rows, fields] = await conn.query(query, [id]);
+        console.log("Retorno SQL: " + JSON.stringify(rows));
+        return rows;
+    }catch(err){
+        console.log("Erro SQL: " + err);
+        throw'Erro Inesperado';
+    }
+
 }
 
 async function getOrderByClientId(id) {
     const conn = await connect();
     const query = `SELECT *
                    FROM orders
-                   WHERE client_id = "${id}";`;
-    const [rows, fields] = await connection.execute(query);
-    return rows;
+                   WHERE client_id = ?;`;
+
+    try{
+        const [rows, fields] = await conn.query(query, [id]);
+        console.log("Retorno SQL: " + JSON.stringify(rows));
+        return rows;
+    }catch(err){
+        console.log("Erro SQL: " + err);
+        throw'Erro Inesperado';
+    }
 }
 
 async function updateOrderById(id, clientId, productId, amount) {
     try {
         const conn = await connect();
         const query = `UPDATE orders
-                       SET client_id  = "${clientId}",
-                           product_id = "${productId}",
-                           amount     = ${amount}
-                       WHERE id = "${id}";`;
-        const [rows] = await conn.execute(query);
+                       SET client_id  = ?,
+                           product_id = ?,
+                           amount     = ?
+                       WHERE id = ?;`;
+
+        const [rows, fields] = await conn.query(query, [clientId, productId, amount, id]);
+        console.log("Retorno SQL: " + JSON.stringify(rows));
         return rows;
     } catch (err) {
         throw {code: 500, message: 'Erro inesperado ao tentar cadastrar pedido'};
@@ -60,16 +75,16 @@ async function deleteOrderById(id) {
     const conn = await connect();
     const query = `DELETE
                    FROM orders
-                   WHERE id = "${id}";`;
-    await connection.execute(query);
+                   WHERE id = ?;`;
+    await conn.query(query, [id]);
 }
 
 async function insertOrder(id, clientId, productId, amount) {
     const conn = await connect();
     const query = `INSERT INTO orders(id, client_id, product_id, amount)
-                   VALUES ("${id}", "${clientId}", "${productId}", ${amount});`;
+                   VALUES (?, ?, ?, ?);`;
     try {
-        await connection.execute(query);
+        await conn.execute(query, [id, clientId, productId, amount]);
     } catch (err) {
         if (err.errno === 1062) {
             throw {code: 400, message: 'Já existe um pedido cadastrado com este id!'};
