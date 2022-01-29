@@ -20,8 +20,9 @@ async function connect() {
 async function getAllProducts() {
     const conn = await connect();
     const query = `SELECT *
-                   FROM products LIMIT 1000;`;
-    const [rows, fields] = await connection.execute(query);
+                   FROM products
+                   LIMIT 1000;`;
+    const [rows] = await conn.execute(query);
     return rows;
 }
 
@@ -29,8 +30,8 @@ async function getProductById(id) {
     const conn = await connect();
     const query = `SELECT *
                    FROM products
-                   WHERE id = "${id}";`;
-    const [rows, fields] = await connection.execute(query);
+                   WHERE id = ?;`;
+    const [rows] = await conn.execute(query, [id]);
     return rows;
 }
 
@@ -39,11 +40,11 @@ async function updateProductById(id, name, description, value) {
     try {
         const conn = await connect();
         const query = `UPDATE products
-                       SET name        = "${name}",
-                           description = "${description}",
-                           value       = ${value}
-                       WHERE id = "${id}";`;
-        const [rows] = await conn.execute(query);
+                       SET name        = ?,
+                           description = ?,
+                           value       = ?
+                       WHERE id = ?;`;
+        const [rows] = await conn.execute(query, [name, description, value, id]);
         return rows;
     } catch (err) {
         throw {code: 500, message: 'Erro inesperado ao tentar cadastrar usuário'};
@@ -54,16 +55,16 @@ async function deleteProductById(id) {
     const conn = await connect();
     const query = `DELETE
                    FROM products
-                   WHERE id = "${id}";`;
-    await connection.execute(query);
+                   WHERE id = ?;`;
+    await conn.execute(query, [id]);
 }
 
 async function insertProduct(name, description, value) {
     const conn = await connect();
     const query = `INSERT INTO products(id, name, description, value)
-                   VALUES ("${randomUUID()}", "${name}", "${description}", ${value});`;
+                   VALUES (?, ?, ?, ?)`;
     try {
-        await connection.execute(query);
+        await conn.execute(query, [randomUUID(), name, description, value]);
     } catch (err) {
         if (err.errno === 1062) {
             throw {code: 400, message: 'Já existe um producte cadastrado com este usuário!'};
