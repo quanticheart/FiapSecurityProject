@@ -19,23 +19,21 @@ async function getAllOrders() {
     const conn = await connect();
     const query = `SELECT *
                    FROM orders LIMIT 1000;`;
-    const [rows, fields] = await conn.execute(query);
+    const [rows] = await conn.execute(query);
     return rows;
 }
 
 async function getOrderById(id) {
     const conn = await connect();
-    const query = `SELECT * FROM orders WHERE id = ?;`;
-
-    try{
-        const [rows, fields] = await conn.query(query, [id]);
-        console.log("Retorno SQL: " + JSON.stringify(rows));
+    const query = `SELECT *
+                   FROM orders
+                   WHERE id = ?;`;
+    try {
+        const [rows] = await conn.query(query, [id]);
         return rows;
-    }catch(err){
-        console.log("Erro SQL: " + err);
+    } catch (err) {
         throw'Erro Inesperado';
     }
-
 }
 
 async function getOrderByClientId(id) {
@@ -43,13 +41,10 @@ async function getOrderByClientId(id) {
     const query = `SELECT *
                    FROM orders
                    WHERE client_id = ?;`;
-
-    try{
-        const [rows, fields] = await conn.query(query, [id]);
-        console.log("Retorno SQL: " + JSON.stringify(rows));
+    try {
+        const [rows] = await conn.query(query, [id]);
         return rows;
-    }catch(err){
-        console.log("Erro SQL: " + err);
+    } catch (err) {
         throw'Erro Inesperado';
     }
 }
@@ -62,9 +57,7 @@ async function updateOrderById(id, clientId, productId, amount) {
                            product_id = ?,
                            amount     = ?
                        WHERE id = ?;`;
-
-        const [rows, fields] = await conn.query(query, [clientId, productId, amount, id]);
-        console.log("Retorno SQL: " + JSON.stringify(rows));
+        const [rows] = await conn.query(query, [clientId, productId, amount, id]);
         return rows;
     } catch (err) {
         throw {code: 500, message: 'Erro inesperado ao tentar cadastrar pedido'};
