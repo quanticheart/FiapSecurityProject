@@ -12,4 +12,4 @@ RUN npm config set prefix "/home/node_modules" \
     && npm i mysql2 \
     && npm i -g nodemon
 
-CMD nodemon app.js
+CMD nodemon -L app.js

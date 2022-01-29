@@ -6,7 +6,7 @@ const RateLimit = require('express-rate-limit');
 const https = require('https');
 const fs = require('fs');
 
-exports.host = process.env.DOCKER_HOST_IP || 'http://localhost';
+exports.host = process.env.DOCKER_HOST_IP || 'https://localhost';
 exports.getApp = function () {
     const app = express()
 

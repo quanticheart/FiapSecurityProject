@@ -5,13 +5,13 @@ const request = require('request');
 const port = 3000
 
 // Auth
-const { auth, requiredScopes } = require('express-oauth2-jwt-bearer');
-const checkScopes = requiredScopes('openid');
-
-const checkJwt = auth({
-    audience: 'http://localhost:4200',
-    issuerBaseURL: `https://dev-5b04zxtm.us.auth0.com`,
-});
+// const { auth, requiredScopes } = require('express-oauth2-jwt-bearer');
+// const checkScopes = requiredScopes('openid');
+//
+// const checkJwt = auth({
+//     audience: 'http://localhost:4200',
+//     issuerBaseURL: `https://dev-5b04zxtm.us.auth0.com`,
+// });
 
 app.use(function(req, res, next) {
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -21,19 +21,15 @@ app.use(function(req, res, next) {
     next();
  });
 
- // Implementa https
+// Implementa https
 const fs = require('fs');
 var https = require('https');
-var privateKey  = fs.readFileSync('/Users/u010616/Downloads/projeto/node-bff-api/sslcert/selfsigned.key', 'utf8');
-var certificate = fs.readFileSync('/Users/u010616/Downloads/projeto/node-bff-api/sslcert/selfsigned.crt', 'utf8');
-
+var privateKey  = fs.readFileSync('./sslcert/selfsigned.key', 'utf8');
+var certificate = fs.readFileSync('./sslcert/selfsigned.crt', 'utf8');
 var credentials = { key: privateKey, cert: certificate };
-
 var httpsServer = https.createServer(credentials, app);
 
-httpsServer.listen(port);
-
-app.get('/products', checkJwt, checkScopes, async (req, res, next) => {
+app.get('/products', async (req, res, next) => {
     request(`${host}:3001/products`, function (err, body) {
         return res.json(JSON.parse(body.body));
     });
@@ -57,7 +53,6 @@ app.post('/buy', async (req, res) => {
     });
 });
 
-
-app.listen(port, () => {
+httpsServer.listen(port,() => {
     console.log(`Listening at http://localhost:${port}`)
 });

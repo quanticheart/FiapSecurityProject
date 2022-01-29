@@ -14,4 +14,4 @@ RUN npm config set prefix "/home/node_modules" \
     && npm i request \
     && npm i -g nodemon
 
-CMD nodemon app.js
+CMD nodemon -L app.js
