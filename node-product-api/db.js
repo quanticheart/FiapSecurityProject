@@ -62,7 +62,7 @@ async function deleteProductById(id) {
 async function insertProduct(name, description, value) {
     const conn = await connect();
     const query = `INSERT INTO products(id, name, description, value)
-                   VALUES (?, ?, ?, ?)`;
+                   VALUES (?, ?, ?, ?);`;
     try {
         await conn.execute(query, [randomUUID(), name, description, value]);
     } catch (err) {
