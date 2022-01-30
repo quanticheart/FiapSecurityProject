@@ -47,7 +47,7 @@ async function updateProductById(id, name, description, value) {
         const [rows] = await conn.execute(query, [name, description, value, id]);
         return rows;
     } catch (err) {
-        throw {code: 500, message: 'Erro inesperado ao tentar cadastrar usuário'};
+        throw {code: 500, message: 'Erro inesperado ao tentar cadastrar produto'};
     }
 }
 
@@ -67,7 +67,7 @@ async function insertProduct(name, description, value) {
         await conn.execute(query, [randomUUID(), name, description, value]);
     } catch (err) {
         if (err.errno === 1062) {
-            throw {code: 400, message: 'Já existe um producte cadastrado com este usuário!'};
+            throw {code: 400, message: 'Já existe um produto cadastrado!'};
         } else {
             throw {code: 500, message: 'Erro inesperado ao tentar cadastrar usuário'};
         }
